@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this research software, please cite it as below."
+title: "Predictive Volatility Networks on MOEX"
+type: software
+version: "10.1-candidate"
+date-released: 2026-09-09
+authors:
+  - family-names: "Vasiliev"
+    given-names: "Maxim"
