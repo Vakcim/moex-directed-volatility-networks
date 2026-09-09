@@ -1,7 +1,11 @@
-# License status
+# Статус лицензии
 
-No open-source license is granted by this review package. Copyright remains
-with the project author. Before making the GitHub repository public, choose a
-license deliberately (for example MIT for permissive reuse) and replace this
-file with the canonical license text containing the author's legal name.
+Для этого репозитория пока не предоставлена открытая лицензия. Авторские права
+остаются у автора проекта. Перед тем как разрешить другим людям использовать,
+изменять и распространять код, необходимо осознанно выбрать лицензию и заменить
+этот файл её каноническим текстом с юридическим именем автора.
 
+Для разрешающего open-source режима подходит MIT License: она допускает
+использование, изменение и распространение кода, включая коммерческое, при
+сохранении уведомления об авторских правах и текста лицензии. Лицензия также
+содержит отказ от гарантий и ответственности.

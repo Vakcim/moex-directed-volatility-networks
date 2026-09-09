@@ -1,152 +1,168 @@
-# Predictive Volatility Networks on MOEX
+# Направленные предсказательные сети волатильности на Московской бирже
 
-Leakage-aware construction of directed nonlinear predictive networks and their
-incremental value for one-day-ahead realized-variance forecasting.
+Исследование посвящено проверке того, содержит ли история других акций
+дополнительную информацию для прогноза реализованной дисперсии конкретной акции
+на следующий торговый день после учёта её собственной динамики и общего
+рыночного фактора.
 
-## Research question
-
-Does the history of stock `j` add nonlinear out-of-sample information about
-the next-day realized variance of stock `i`, after conditioning on the target's
-own HAR history and a market-volatility factor?
-
-The project distinguishes three objects that are often conflated:
+Главное различие, на котором строится работа:
 
 \[
-\text{co-movement} \ne \text{conditional predictability} \ne \text{causality}.
+\text{совместное движение}
+\ne
+\text{условная предсказуемость}
+\ne
+\text{причинность}.
 \]
 
-Pearson graphs represent the first. Out-of-sample source-group permutation
-importance from CatBoost approximates the second. The project makes no causal
-claim.
+Корреляционный граф Pearson описывает совместное движение акций. Направленный
+граф CatBoost строится по вневыборочной важности информации от каждой акции для
+прогноза другой. Такая предсказательная связь не интерпретируется как доказанная
+причинность.
 
-## Current result
+## Что сделано за неделю 3–9 сентября 2026 года
 
-The development sample ends on **2026-08-10**. Directed CatBoost networks are
-highly asymmetric and have little edge overlap with Pearson networks, but their
-incremental forecasting signal is weak. CatBoost-current was numerically only
-`0.000888` QLIKE below HAR-RV (`-7.145484` versus `-7.144596`) and the gain was
-not statistically stable. Dynamic graph changes did not improve forecasts
-consistently across Pearson, ElasticNet and CatBoost.
+- Исследовательский код, протоколы и результаты собраны в единый публичный
+  репозиторий.
+- Исходная реализация `v10` сохранена отдельно вместе с контрольными суммами,
+  чтобы прежние результаты можно было отличить от последующих исправлений.
+- Проведён аудит кода и добавлены проверки временного порядка, границ выборок,
+  полноты контрольных точек и запрета на перезапись зафиксированных параметров.
+- Исправлена обработка неполного последнего блока и причинное обновление
+  последнего месяца данных IMOEX.
+- Обнаружены две пары точных дубликатов среди признаков изменения графа. В новой
+  спецификации `v10.1` они исключены из матрицы модели, но сохранены в `v10` для
+  воспроизводимости исторических результатов.
+- Добавлены автоматические тесты и непрерывная проверка проекта через GitHub
+  Actions. Все тесты в рабочей среде проходят.
+- На исходных 60 проверочных датах и 1969 наблюдениях повторно выбрана сила
+  регуляризации. Для всех восьми моделей оптимальным среди заранее заданных
+  значений оказалось `alpha=100`.
+- До просмотра новых результатов зафиксированы спецификация `v10.1`, параметры
+  моделей и реестр воспроизводимости из 53 записей.
+- Создана отдельная резервная копия зафиксированных файлов и Git-тег
+  `v10.1-prospective-freeze`.
+- Результаты после 10 августа 2026 года не анализировались.
 
-All reported values are **development/exploratory**, not confirmatory. No
-post-cutoff outcome had been run or viewed as of 2026-09-09. See
-[Development results](docs/results/DEVELOPMENT_RESULTS.md).
+## Основные численные результаты
 
-## What is methodologically useful here
+Для QLIKE меньшее значение соответствует лучшему прогнозу.
 
-- point-in-time dynamic top-40 universe drawn from an 82-stock history panel;
-- train / importance / forecast graph windows separated in chronological time;
-- directed group permutation importance evaluated out of sample;
-- raw and causally market-residualized realized variance;
-- HAR-RV, HAR-market, Pearson, ElasticNet and CatBoost comparisons;
-- QLIKE, daily paired HAC inference, circular block bootstrap and Holm control;
-- graph identity, lag-20 and frozen-graph placebos;
-- explicit negative-result reporting and a sealed future holdout;
-- immutable specifications, source hashes and resumable atomic checkpoints.
+| Модель на разведочном периоде | QLIKE | Интерпретация |
+|---|---:|---|
+| HAR-RV | `-7.144596` | Сильная базовая модель на собственной истории волатильности |
+| Pearson: текущий граф | `-7.1354` | Не превзошёл HAR-RV |
+| Pearson: изменения графа | `-7.1343` | Изменения корреляционной сети не помогли |
+| CatBoost: текущий направленный граф | `-7.145484` | Лучше HAR-RV лишь на `0.000888`; выигрыш статистически неустойчив |
 
-## Repository map
+После удаления рыночного фактора направленный CatBoost-граф также не превзошёл
+простую остаточную HAR-RV: `-7.838069` против `-7.841625`.
 
-| Path | Purpose |
-|---|---|
-| `v10_directed/` | Executable research pipeline |
-| `docs/protocols/` | Frozen protocol, amendments and implementation notes |
-| `docs/results/` | Human-readable development evidence |
-| `results/development/` | Small reported result tables; no raw market data |
-| `results/confirmatory/` | Sealed-holdout status only |
-| `docs/career/` | Daily research log and portfolio workflow |
-| `tests/` | Unit tests for leakage, freeze and checkpoint safeguards |
-| `legacy_snapshot/` | Exact supplied v10 code snapshot for provenance |
+## Что найдено в структуре сетей
 
-## Two specifications
+| Показатель | Значение | Смысл |
+|---|---:|---|
+| Пересечение рёбер CatBoost и Pearson по Жаккару | около `0.056` | Сети описывают разные типы зависимости |
+| Взаимность рёбер CatBoost | около `0.072` | Большинство предсказательных связей направлены только в одну сторону |
+| Взаимность рёбер Pearson | `1.0` | Корреляционный граф симметричен по построению |
+| Временная устойчивость Pearson | `0.403` | Корреляционная структура относительно стабильна |
+| Временная устойчивость исходного CatBoost-графа | `0.299` | Выбранные предсказательные источники меняются чаще |
+| Пересечение исходного и очищенного CatBoost-графов | `0.193` | Рыночный фактор существенно влияет на топологию сети |
 
-`v10` reproduces the historical development design. Its dynamic ridge models
-include two pairs of compatibility aliases retained in the feature artifact.
+Несмотря на небольшое абсолютное пересечение исходной и очищенной сетей,
+наблюдаемое число общих рёбер примерно в `3.75` раза выше случайного ожидания.
+Это указывает на существование небольшого устойчивого ядра связей.
 
-`v10.1` is prospective Amendment 07. It uses the same hypotheses and data
-clock, but removes exact duplicate aliases from the model matrix, enforces
-frozen confirmatory parameters, refreshes the final IMOEX month, validates
-complete checkpoints and blocks cross-segment training. It writes only to
-`benchmark_v10_1_*` and cannot overwrite historical v10.
+## Основные выводы
 
-## Installation
+1. **Предсказательная сеть не равна корреляционной.** Направленные нелинейные
+   связи CatBoost структурно отличаются от совместного движения, измеряемого
+   Pearson.
+2. **Большая часть однодневной предсказуемости уже содержится в собственной
+   истории волатильности.** Поэтому HAR-RV остаётся очень сильной базовой
+   моделью.
+3. **Текущее состояние направленного графа содержит слабый дополнительный
+   сигнал**, но его величина сопоставима с ошибкой оценки и пока не даёт
+   статистически устойчивого улучшения.
+4. **Изменения графа оказались особенно шумными.** Разность двух оценённых сетей
+   усиливает ошибку оценки, а перестановки близких по важности соседей создают
+   ложные изменения рёбер.
+5. **Удаление рыночного фактора меняет структуру сети, но не улучшает прогноз.**
+   Вместе с общерыночной зависимостью удаляется часть полезного сигнала, а оценка
+   остаточной дисперсии добавляет собственную ошибку.
+6. **Сильная регуляризация является самостоятельным результатом.** Выбор
+   `alpha=100` для всех моделей показывает, что дополнительные сетевые признаки
+   необходимо существенно сжимать.
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r v10_directed/requirements_v10.txt
-python -m pip install -r requirements-dev.txt
-make check
-```
+Таким образом, текущий результат работы является содержательным отрицательным
+результатом: новая направленная сетевая структура обнаружена, но её динамика
+слишком шумна, а дополнительная информация слишком мала, чтобы устойчиво
+улучшить краткосрочный прогноз поверх HAR-RV.
 
-The private/raw `data_v02` directory is intentionally not distributed. Its
-required schema and artifact layout are documented in [data/README.md](data/README.md).
+## Текущий статус подтверждающей проверки
 
-## Reproduce historical v10
+Спецификация `v10.1` зафиксирована 9 сентября 2026 года до просмотра новых
+результатов.
 
-The full command order is in [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md).
-The exact supplied pre-audit implementation is preserved under `legacy_snapshot`; the
-active runner defaults to `--spec-version v10` and adds fail-closed engineering
-guards without relabeling any historical result.
+- контрольная сумма зафиксированных параметров:
+  `b3cc3824b35dc2c6f603647b3b1a9871a9cb7bebdf0e6e063b088e3334763c9c`;
+- контрольная сумма реестра воспроизводимости:
+  `fd9e9bc1a149d70c3bc63c3b3b2d233661668755f3d2472a6e89d5fd863eaf84`;
+- требуемый объём подтверждающей выборки: 120 допустимых дат;
+- предельная календарная дата: 31 марта 2027 года;
+- на момент фиксации допустимых дат после 10 августа 2026 года ещё не было.
 
-## Prepare prospective v10.1 without looking at outcomes
+До достижения правила остановки запрещено смотреть итоговые ошибки, сравнения
+моделей, графики и рейтинги на подтверждающей выборке.
 
-On the machine containing `data_v02`:
+## Что ещё нужно сделать
 
-```bash
-python -u v10_directed/preflight_v101.py \
-  --root data_v02 --expect selection
+### Ближайший технический этап
 
-python -u v10_directed/train_directed_har_benchmark_v01.py \
-  --root data_v02 --spec-version v10.1 --stage select
+- проверить скрипты загрузки и построения исходных признаков перед их повторным
+  запуском;
+- причинно дополнить десятиминутные свечи после 10 августа 2026 года;
+- обновить реализованную дисперсию, динамическую вселенную акций и рыночный
+  фактор;
+- достроить направленные графы и графовые признаки, не изменяя зафиксированную
+  спецификацию;
+- начать накапливать запечатанные прогнозы `v10.1` без сохранения целевых
+  значений и ошибок в файле прогнозов;
+- регулярно проверять только техническую полноту данных, не раскрывая качество
+  моделей.
 
-python -u v10_directed/train_directed_har_benchmark_v01.py \
-  --root data_v02 --spec-version v10.1 --stage freeze
+### До полноценной статьи
 
-python -u v10_directed/freeze_reproducibility_manifest_v02.py \
-  --root data_v02 --spec-version v10.1 --phase preconfirmatory
+- сверить все восстановленные из исследовательского журнала числа с исходными
+  машинными таблицами и сохранить их контрольные суммы;
+- подготовить 4–5 основных рисунков о качестве прогноза и структуре сетей;
+- проверить устойчивость выводов к числу соседей, длине окна и частоте
+  перестроения графа;
+- отдельно исследовать более широкую сетку регуляризации, поскольку выбранное
+  `alpha=100` находится на её верхней границе; это должно оформляться как новая
+  спецификация, а не изменение `v10.1`;
+- по возможности повторить эксперимент на другом рынке или независимом наборе
+  ликвидных инструментов;
+- завершить обзор литературы, текст статьи и обсуждение экономической природы
+  обнаруженных направленных связей;
+- открыть и проанализировать подтверждающую выборку только после выполнения
+  заранее установленного правила остановки.
 
-python -u v10_directed/preflight_v101.py \
-  --root data_v02 --expect freeze
-```
+## Материалы репозитория
 
-Do not run the v10.1 development analyzer between selection and freeze. The
-first command reads only the original 60 validation dates. The freeze is not
-complete until the generated JSON files and manifest are retained outside the
-working directory or committed to a private provenance record.
+- [подробные результаты](docs/results/DEVELOPMENT_RESULTS.md);
+- [протокол и его изменения](docs/protocols/);
+- [аудит кода](docs/CODE_AUDIT_2026-09-09.md);
+- [текущий статус проекта](PROJECT_STATUS.md);
+- [план дальнейшей работы](ROADMAP.md);
+- [техническая инструкция по воспроизводимости](docs/REPRODUCIBILITY.md).
 
-## Continue the sealed holdout
+Сырые данные Московской биржи не публикуются. Репозиторий содержит код,
+протоколы, небольшие итоговые таблицы и документы, необходимые для проверки
+логики исследования.
 
-After new market data and causal features are updated:
+## Лицензия
 
-```bash
-python -u v10_directed/train_directed_har_benchmark_v01.py \
-  --root data_v02 --spec-version v10.1 --stage run --period confirmatory
-
-python -u v10_directed/train_directed_har_benchmark_v01.py \
-  --root data_v02 --spec-version v10.1 --stage assemble --period confirmatory
-```
-
-The assembled file contains predictions but no targets or losses. Analysis
-stays locked until 120 valid dates or the 2027-03-31 cap.
-
-## Career-facing deliverables
-
-The repository already supports four honest portfolio artifacts:
-
-1. reproducible research code with temporal leakage guards;
-2. a concise negative-result case study;
-3. a conference abstract and paper outline;
-4. an auditable daily engineering/research log.
-
-Use [the daily workflow](docs/career/DAILY_RESEARCH_WORKFLOW.md) and
-[GitHub publishing checklist](docs/career/GITHUB_PUBLISHING_CHECKLIST.md) to
-advance the work in small, visible increments without paying for a conference
-or service.
-
-## Scope and limitations
-
-This is research software, not investment advice. Raw MOEX data are not
-redistributed. The evidence currently covers one market and one development
-period; graph importance is predictive, not causal; and the future holdout is
-still sealed.
+Открытая лицензия пока не выбрана. До отдельного решения автора действует
+обычное авторское право. Для публичного разрешения на использование и изменение
+кода позднее может быть добавлена MIT License.
