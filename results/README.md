@@ -10,9 +10,10 @@
 Сделать анализ статей о моделях рынка, для обоснования истользования как GNN, так и нейросетевых методов вообще
 в задаче прогнозирования волатильности
 
-- марковиц
-- RISK AVERSION IN THE SMALL AND IN THE LARG  JOHN W. PRATT
-- A New Interpretation of Information Rate  J. L. KELLY. JR.
-- Portfolio Optimization Daniel P. Palomar
-- LIFETIME PORTFOLIO SELECTION BY DYNAMIC STOCHASTIC PROGRAMMING Paul A. Samuelson
--  
+- PORTFOLIO SELECTION, HARRY MARKOWITZ
+- RISK AVERSION IN THE SMALL AND IN THE LARG, JOHN W. PRATT
+- A New Interpretation of Information Rate,  J. L. KELLY. JR.
+- Portfolio Optimization, Daniel P. Palomar
+- LIFETIME PORTFOLIO SELECTION BY DYNAMIC STOCHASTIC PROGRAMMING, Paul A. Samuelson
+- 
+# 
