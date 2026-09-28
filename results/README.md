@@ -57,7 +57,6 @@ H3.3. Необходимость именно GNN
 
   
 # Текущая работа
-- Проанализировать статьи о математических моделях рынка
 
 - PORTFOLIO SELECTION, HARRY MARKOWITZ
 - RISK AVERSION IN THE SMALL AND IN THE LARG, JOHN W. PRATT
