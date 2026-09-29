@@ -121,7 +121,7 @@ H3.3. Необходимость именно GNN
 
 ### 3. Математическая постановка
 - Динамика капитала: $V_{n+1} = V_n\[b(R_{n+1}) + \alpha_{S_{n+1}}a(S_{n+1} | R_{n+1})\]$
-- Целевая функция:$G=\lim_{N\to\infty}\frac{1}{N}\log_2\frac{V_N}{V_0}$
+- Целевая функция: $ G = \lim_{N \to \infty} \frac{1}{N} \log_2 \frac{V_N}{V_0} $
 $G=\mathbb E\left\[\log_2\frac{V_{n+1}}{V_n}\right\]$
 
 
