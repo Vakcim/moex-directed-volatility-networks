@@ -61,8 +61,11 @@ H3.3. Необходимость именно GNN
 - PORTFOLIO SELECTION, HARRY MARKOWITZ
 - RISK AVERSION IN THE SMALL AND IN THE LARG, JOHN W. PRATT
 - A New Interpretation of Information Rate,  J. L. KELLY. JR.
-- Portfolio Optimization, Daniel P. Palomar
 - LIFETIME PORTFOLIO SELECTION BY DYNAMIC STOCHASTIC PROGRAMMING, Paul A. Samuelson
+- LIFETIME PORTFOLIO SELECTION UNDER UNCERTAINTY: THE CONTINUOUS-TIME CASE, Robert C. Merton
+- Optimum Consumption and Portfolio Rules in a Continuous-Time Model, ROBERT C. MERTQN
+- Portfolio Selection with Transactions Costs, MICHAEL J. P. MAGILL 
+- Portfolio Optimization, Daniel P. Palomar
 
 
   ---
@@ -165,8 +168,9 @@ H3.3. Необходимость именно GNN
 ---
 
 
-## PORTFOLIO SELECTION, HARRY MARKOWITZ
+##  RISK AVERSION IN THE SMALL AND IN THE LARG, JOHN W. PRATT
 ### 1. Какую проблему решает автор?
+
 
 ### 2. Объекты модели
 - Состояние:
