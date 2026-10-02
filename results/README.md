@@ -190,7 +190,7 @@ H3.3. Необходимость именно GNN
 Премия за риск определяется равенством:
 $u\left(x+E[\widetilde Z]-\pi(x,\widetilde Z)\right) = E[u(x+\widetilde Z)]$
 Для малого справедливого риска:
-$\pi(x,\widetilde Z) \approx \frac12A(x)\operatorname{Var}(\widetilde Z)$
+$\pi(x,\widetilde Z) \approx \frac12A(x)\mathrm{Var}(\widetilde Z)$
 - Динамика капитала: как относительная так и абсолютная
 - Целевая функция: вот он тут о ней говорит, какую можно выбрать
 - Ограничения: нет коммисий и не выводит саму формулу оптимизациии как я понял
