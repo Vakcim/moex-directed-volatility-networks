@@ -273,9 +273,7 @@ $\max_{\{c_t,w_t\}}\mathbb{E}\left[\sum_{t=0}^{T}\beta^t u(c_t)\right],\qquad 0<
 
 Уравнение Беллмана для $t<T$:
 
-$V_t(x)=
-\max_{c,w}\left\{u(c)+\beta\mathbb{E}\left[V_{t+1}\left((x-c)\left[(1-w)R_f+wR_{t+1}\right]\right)\right]\right\}.
-$
+$V_t(x)=\max_{c,w}\left\{u(c)+\beta\mathbb{E}\left[V_{t+1}\left((x-c)\left[(1-w)R_f+wR_{t+1}\right]\right)\right]\right\}$
 Здесь $V_t(x)$ — максимальная ожидаемая полезность оставшегося потребления при текущем капитале $x$.
 
 Если в последний момент весь капитал потребляется:
