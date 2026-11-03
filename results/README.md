@@ -428,7 +428,7 @@ $I(W,t)=\sup_{\{C_s,w_s\}_{s\in[t,T]}}\mathbb E\left[\int_t^T e^{-\rho s}U(C_s)\
 
 Уравнение Гамильтона — Якоби — Беллмана, соответствующее (17′):
 
-$0=I_t+\max_{C,w}\left\{e^{-\rho t}U(C)+\bigl([r+w(a-r)]W-C\bigr)I_W+\dfrac12\sigma^2w^2W^2I_{WW}\right\}.$
+$0=I_t+\max_{C,w}\left[e^{-\rho t}U(C)+\bigl([r+w(a-r)]W-C\bigr)I_W+\dfrac{1}{2}\sigma^2w^2W^2I_{WW}\right].$
 
 Конечное условие:
 
